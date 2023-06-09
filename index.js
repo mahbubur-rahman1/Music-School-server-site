@@ -1,6 +1,8 @@
 const express = require('express');
-const cors = require('cors');
 const app = express();
+require('dotenv').config()
+const cors = require('cors');
+
 const port = process.env.PORT || 5000;
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
@@ -31,7 +33,7 @@ async function run() {
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
-    await client.close();
+    // await client.close();
   }
 }
 run().catch(console.dir);
