@@ -26,7 +26,7 @@ const client = new MongoClient(uri, {
 async function run() {
     try {
         const instractorColection = client.db("musicSchool").collection(" instructors")
-        // const classesColection = client.db("musicSchool").collection("classes")
+        const classesColection = client.db("musicSchool").collection("classes")
 
 
         // Connect the client to the server	(optional starting in v4.7)
@@ -45,10 +45,10 @@ async function run() {
 
 
 
-        // app.get('/classes', async (req, res) => {
-        //     const result = await classesColection.find().toArray()
-        //     res.send(result)
-        // })
+        app.get('/classes', async (req, res) => {
+            const result = await classesColection.find().toArray()
+            res.send(result)
+        })
 
 
 
