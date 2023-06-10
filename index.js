@@ -87,6 +87,17 @@ async function run() {
 
 
 
+        app.delete('/enroll/:id', async(req, res)=>{
+            const id = req.params.id;
+            const query = {_id: new ObjectId(id)}
+            const result = await enrollCollection.deleteOne(query)
+            res.send(result)
+          })
+          
+
+
+
+
         app.get('/classes', async (req, res) => {
             const result = await classesColection.find().toArray()
             res.send(result)
