@@ -43,7 +43,7 @@ const client = new MongoClient(uri, {
 
 async function run() {
     try {
-        const usersCollection = client.db("musicSchool").collection("users")
+        const usersCollection = client.db("musicSchool").collection("users")    
         const instractorColection = client.db("musicSchool").collection(" instructors")
         const classesColection = client.db("musicSchool").collection("classes")
         const enrollCollection = client.db("musicSchool").collection("allEnroll")
@@ -55,6 +55,16 @@ async function run() {
             const token = jwt.sign(user, process.env.ACCESS_TOKEN_SCRECT, { expiresIn: '1hr' })
             res.send({ token })
         })
+
+        const verifyAdmin = async (req, res, next) => {
+            const email = req.decoded.email;
+            const query = { email: email }
+            const user = await usersCollection.findOne(query);
+            if (user?.role !== 'admin') {
+              return res.status(403).send({ error: true, message: 'porbidden message' });
+            }
+            next();
+          }
 
 
         app.get('/enroll', jwtVerify, async (req, res) => {
@@ -77,7 +87,22 @@ async function run() {
         })
 
 
+        app.get('/users', jwtVerify,  async(req, res)=>{
+            const result = await usersCollection.find().toArray()
+            res.send(result)
+          })
 
+          app.post('/users', async(req, res)=>{
+            const user = req.body;
+            const query = {email: user.email}
+            const existing = await usersCollection.findOne(query)
+          
+            if(existing){
+              return res.send({message: 'user is alreaady existing' })
+            }
+            const result = await usersCollection.insertOne(user)
+            res.send(result)
+          })
 
 
         app.patch('/users/admin/:id', async(req, res)=>{
@@ -118,10 +143,6 @@ async function run() {
 
 
 
-
-
-
-
         app.post('/all-enroll', async (req, res) => {
             const enroll = req.body;
             const result = await enrollCollection.insertOne(enroll);
@@ -143,6 +164,41 @@ async function run() {
             const result = await enrollCollection.deleteOne(query)
             res.send(result)
         })
+
+
+
+        app.get('/my-class', jwtVerify, async(req, res)=>{
+            const email = req.query.email;
+            // console.log(email)
+            if(!email){
+             return res.send([]);
+            }
+            const decodedEmail = req.decoded.email;
+            if(email !== decodedEmail){
+              return res.status(403).send({error: True, message: 'porviden access'})
+            }
+          
+            const query = {email: email};
+            console.log(query)
+            const result = await classesColection.find(query).toArray();
+            res.send(result)
+          })
+
+
+        app.delete('/my-classes/:id', async(req, res)=>{
+            const id = req.params.id;
+            const query = {_id: new ObjectId(id)}
+            const result = await classesColection.deleteOne(query)
+            res.send(result)
+          })
+
+
+          app.post('/addClass', async(req, res)=>{
+            const item = req.body;
+            const result = await classesColection.insertOne(item)
+            res.send(result)
+          
+          })
 
 
 
