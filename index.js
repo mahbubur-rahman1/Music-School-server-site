@@ -16,7 +16,6 @@ const jwtVerify = (req, res, next) => {
     if (!authorization) {
         return res.status(401).send({ error: true, message: 'unathorization access' })
     }
-    // bearer token
     const token = authorization.split(' ')[1];
 
     jwt.verify(token, process.env.ACCESS_TOKEN_SCRECT, (err, decoded) => {
@@ -32,7 +31,6 @@ const jwtVerify = (req, res, next) => {
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.alw7nxz.mongodb.net/?retryWrites=true&w=majority`;
 
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
     serverApi: {
         version: ServerApiVersion.v1,
@@ -69,7 +67,6 @@ async function run() {
 
         app.get('/enroll', jwtVerify, async (req, res) => {
             const email = req.query.email;
-            // console.log(email)
             if (!email) {
                 return res.send([]);
             }
@@ -79,7 +76,6 @@ async function run() {
             }
 
             const query = { email: email };
-            // console.log(query)
             const result = await enrollCollection.find(query).toArray();
             res.send(result)
 
@@ -104,7 +100,7 @@ async function run() {
             res.send(result)
           })
 
-          
+
 
           app.get('/users/admin/:email', jwtVerify, async (req, res) => {
   const email = req.params.email;
@@ -240,7 +236,6 @@ app.get('/users/instructor/:email', jwtVerify, async (req, res) => {
         app.post("/create-payment-intent", jwtVerify, async (req, res) => {
             const { price } = req.body;
             const amount = parseInt(price * 100);
-            // console.log(price, amount)
             const paymentIntent = await stripe.paymentIntents.create({
                 amount: amount,
                 currency: 'usd',
@@ -266,7 +261,6 @@ app.get('/users/instructor/:email', jwtVerify, async (req, res) => {
 
         app.get('/my-enroll-class', jwtVerify, async (req, res) => {
             const email = req.query.email;
-            // console.log(email)
             if (!email) {
                 return res.send([]);
             }
@@ -276,7 +270,6 @@ app.get('/users/instructor/:email', jwtVerify, async (req, res) => {
             }
 
             const query = { email: email };
-            // console.log(query)
             const result = await paymentCollection.find(query).toArray();
             res.send(result)
         })
