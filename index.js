@@ -314,3 +314,5 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
     console.log(`SIMPLE CRUD IS RUNNNING ON PORT ${port}`)
 })
+
+// "test": "echo \"Error: no test specified\" && exit 1"
